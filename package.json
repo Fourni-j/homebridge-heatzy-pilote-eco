@@ -1,13 +1,13 @@
 {
   "license": "MIT",
   "main": "index.js",
-  "name": "homebridge-heatzy-pilote",
+  "name": "homebridge-heatzy-as-switch-with-mode",
   "scripts": {
     "test": "echo \"Error: no test specified\""
   },
   "version": "1.0.0",
-  "repository": "funkyremi/homebridge-heatzy-pilote",
-  "author": "Remi Testa",
+  "repository": "Fourni-j/homebridge-heatzy-pilote-eco",
+  "author": "Charles-Adrien Fournier",
   "bundleDependencies": false,
   "dependencies": {
     "axios": "^0.19.0"

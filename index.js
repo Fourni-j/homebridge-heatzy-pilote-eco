@@ -9,6 +9,15 @@ const heatzyUrl = "https://euapi.gizwits.com/app/";
 const loginUrl = url.parse(heatzyUrl + "login");
 const heatzy_Application_Id = "c70a66ff039d41b4a220e198b0fcc8b3";
 
+// Used when getting the device state
+const confortHeatingModeStr = "cft";
+const ecoHeatingModeStr = "eco";
+
+// Used when setting the device state
+const confortHeatingMode = 0;
+const ecoHeatingMode = 1;
+const offHeatingMode = 3;
+
 let Service, Characteristic;
 
 module.exports = (homebridge) => {
@@ -16,7 +25,7 @@ module.exports = (homebridge) => {
   Service = homebridge.hap.Service;
   Characteristic = homebridge.hap.Characteristic;
   homebridge.registerAccessory(
-    "homebridge-heatzy-as-switch",
+    "homebridge-heatzy-as-switch-with-mode",
     "HeatzyPilote",
     SwitchAccessory
   );
@@ -33,6 +42,7 @@ function SwitchAccessory(log, config) {
   this.username = config["username"];
   this.password = config["password"];
   this.interval = config["interval"] || 60;
+  this.mode = config["mode"];
   this.trace = config["trace"] || false;
 
   // Heatzy token
@@ -95,7 +105,7 @@ async function getState(device) {
       headers: { "X-Gizwits-Application-Id": heatzy_Application_Id },
     });
     if (response.status == 200) {
-      if (response.data.attr.mode == "cft") {
+      if (response.data.attr.mode == device.mode) {
         state = true;
       }
     } else {
@@ -118,7 +128,7 @@ async function setState(device, state) {
   if (device.heatzyTokenExpire_at < Date.now()) {
     await updateToken(device);
   }
-  const mode = state ? 0 : 3;
+  const mode = state ? (device.mode == confortHeatingModeStr ? confortHeatingMode : ecoHeatingMode) : offHeatingMode
   try {
     const request = {
       method: "post",
